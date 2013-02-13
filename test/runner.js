@@ -132,6 +132,19 @@ describe('Runner', function(){
       });
       runner.checkGlobals('im a test');
     })
+
+    it.only('should report memory leak even if allowed globals not defined', function(done) {
+      runner.globals(['allowedGlobalButNotDefined']);
+      global.other = true;
+
+      runner.on('fail', function(test, err) {
+        err.message.should.equal('global leak detected: other');
+        done();
+      });
+
+      runner.checkGlobals();
+      delete global.other;
+    });
   })
 
   describe('.fail(test, err)', function(){
